@@ -1,0 +1,134 @@
+﻿@model CakeProduction.ViewModels.AddProductViewModel
+@{
+    ViewData["Title"] = "Add New Cake";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageUrl" class="control-label"></label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="PreparationTime" class="control-label"></label>
+                <input asp-for="PreparationTime" class="form-control" />
+                <span asp-validation-for="PreparationTime" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="YieldQuantity" class="control-label"></label>
+                        <input asp-for="YieldQuantity" class="form-control" />
+                        <span asp-validation-for="YieldQuantity" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="YieldUnit" class="control-label"></label>
+                        <input asp-for="YieldUnit" class="form-control" />
+                        <span asp-validation-for="YieldUnit" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Instructions" class="control-label"></label>
+                <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Instructions" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Ingredients</h3>
+    <div id="ingredients-container">
+        @for (int i = 0; i < Model.Ingredients.Count; i++)
+        {
+            <div class="ingredient-row row mb-3">
+                <div class="col-md-5">
+                    <input asp-for="Ingredients[i].Name" class="form-control" placeholder="Ingredient name" />
+                    <span asp-validation-for="Ingredients[i].Name" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="Ingredients[i].Quantity" class="form-control" placeholder="Quantity" />
+                    <span asp-validation-for="Ingredients[i].Quantity" class="text-danger"></span>
+                </div>
+                <div class="col-md-3">
+                    <input asp-for="Ingredients[i].Unit" class="form-control" placeholder="Unit (kg, g, etc.)" />
+                    <span asp-validation-for="Ingredients[i].Unit" class="text-danger"></span>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="button" id="add-ingredient" class="btn btn-secondary mb-3">Add Ingredient</button>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Cake</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            // Add new ingredient row
+            $('#add-ingredient').click(function() {
+                var index = $('#ingredients-container .ingredient-row').length;
+                var html = `
+                    <div class="ingredient-row row mb-3">
+                        <div class="col-md-5">
+                            <input name="Ingredients[${index}].Name" class="form-control" placeholder="Ingredient name" />
+                        </div>
+                        <div class="col-md-3">
+                            <input name="Ingredients[${index}].Quantity" class="form-control" placeholder="Quantity" />
+                        </div>
+                        <div class="col-md-3">
+                            <input name="Ingredients[${index}].Unit" class="form-control" placeholder="Unit (kg, g, etc.)" />
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                        </div>
+                    </div>`;
+                $('#ingredients-container').append(html);
+            });
+
+            // Remove ingredient row
+            $(document).on('click', '.remove-ingredient', function() {
+                $(this).closest('.ingredient-row').remove();
+                // Reindex remaining ingredients
+                $('#ingredients-container .ingredient-row').each(function(index) {
+                    $(this).find('input').each(function() {
+                        var name = $(this).attr('name');
+                        if (name) {
+                            $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

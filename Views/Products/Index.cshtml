@@ -1,0 +1,22 @@
+﻿@model IEnumerable<CakeProduction.Models.Product>
+
+@{
+    ViewData["Title"] = "Our Cakes";
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text">@item.Description</p>
+                    <a asp-action="Details" asp-route-id="@item.ProductId"
+                       class="btn btn-primary">View Recipe</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

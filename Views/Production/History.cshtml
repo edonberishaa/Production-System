@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ProductionLog>
+@{
+    ViewData["Title"] = "Production History";
+}
+
+<h1>Production History</h1>
+
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label class="form-label">Product</label>
+            <select name="productId" class="form-select"
+                    asp-items="ViewBag.Products">
+                <option value="">All Products</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">From Date</label>
+            <input type="date" name="fromDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">To Date</label>
+            <input type="date" name="toDate" class="form-control">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Produced By</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductionDate.ToString("g")</td>
+                <td>@item.Product.Name</td>
+                <td>@item.QuantityProduced @item.Recipe.YieldUnit</td>
+                <td>@item.ProducedBy</td>
+                <td>@item.Notes</td>
+            </tr>
+        }
+    </tbody>
+</table>
