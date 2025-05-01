@@ -2,7 +2,9 @@ using CakeProduction.Data;
 using CakeProduction.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -31,7 +33,11 @@ builder.Services.AddAuthorization(options =>
 
 
 builder.Services.AddScoped<IProductionLogger,ProductionLogger>();
+builder.Services.AddScoped<ILowStockAlertService,LowStockAlertService>();
+builder.Services.AddHostedService<LowStockBackgroundService>();
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<RoleService>();
+
 var app = builder.Build();
 
 using(var scope = app.Services.CreateScope())
@@ -40,8 +46,8 @@ using(var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        //var userManager = services.GetRequiredService<ApplicationDbContext>();
-        //var roleManager = services.GetRequiredService<UserManager<IdentityUser>>();
+        var userManager = services.GetRequiredService<ApplicationDbContext>();
+        var roleManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
         await DatabaseSeeder.SeedAsync(context);
     }

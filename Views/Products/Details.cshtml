@@ -3,56 +3,71 @@
     ViewData["Title"] = Model.Name;
 }
 
-<div class="row">
-    <div class="col-md-6">
-        <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Name">
-    </div>
-    <div class="col-md-6">
-        <h1>@Model.Name</h1>
-        <p>@Model.Description</p>
+<div class="container py-4">
+    <div class="row align-items-start">
+        <!-- Cake Image -->
+        <div class="col-lg-6 mb-4">
+            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Name">
+        </div>
 
-        <h3>Recipe Details</h3>
-        <p>Yield: @Model.Recipe.YieldQuantity @Model.Recipe.YieldUnit</p>
-        <p>Preparation Time: @Model.Recipe.PreparationTime minutes</p>
+        <!-- Cake Info -->
+        <div class="col-lg-6">
+            <h2 class="mb-3">@Model.Name</h2>
+            <p class="lead">@Model.Description</p>
 
-        <h4>Ingredients</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Ingredient</th>
-                    <th>Required</th>
-                    <th>Available</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var ri in Model.Recipe.RecipeIngredients)
-                {
-                    var status = ri.Ingredient.CurrentStock >= ri.Quantity ? "Sufficient" : "Insufficient";
-                    <tr>
-                        <td>@ri.Ingredient.Name</td>
-                        <td>@ri.Quantity @ri.Ingredient.UnitOfMeasure</td>
-                        <td>@ri.Ingredient.CurrentStock @ri.Ingredient.UnitOfMeasure</td>
-                        <td class="@(status == "Sufficient" ? "text-success" : "text-danger")">@status</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            <div class="mt-4">
+                <h4 class="fw-semibold">🍽️ Recipe Details</h4>
+                <ul class="list-unstyled">
+                    <li><strong>Yield:</strong> @Model.Recipe.YieldQuantity @Model.Recipe.YieldUnit</li>
+                    <li><strong>Preparation Time:</strong> @Model.Recipe.PreparationTime minutes</li>
+                </ul>
+            </div>
 
-        <div class="mt-4">
-            <h4>Production Calculator</h4>
-            <form id="productionForm">
-                <div class="form-group">
-                    <label for="desiredQuantity">Desired Quantity (@Model.Recipe.YieldUnit):</label>
-                    <input type="number" class="form-control" id="desiredQuantity"
-                           min="1" value="@Model.Recipe.YieldQuantity">
-                </div>
-                <button type="button" class="btn btn-primary" onclick="calculateRequirements()">
-                    Calculate Requirements
-                </button>
-            </form>
+            <!-- Ingredients Table -->
+            <h5 class="mt-4">🧂 Ingredients</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ingredient</th>
+                            <th>Required</th>
+                            <th>Available</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ri in Model.Recipe.RecipeIngredients)
+                        {
+                            var status = ri.Ingredient.CurrentStock >= ri.Quantity ? "Sufficient" : "Insufficient";
+                            <tr>
+                                <td>@ri.Ingredient.Name</td>
+                                <td>@ri.Quantity @ri.Ingredient.UnitOfMeasure</td>
+                                <td>@ri.Ingredient.CurrentStock @ri.Ingredient.UnitOfMeasure</td>
+                                <td class="fw-bold @(status == "Sufficient" ? "text-success" : "text-danger")">@status</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
 
-            <div id="calculationResults" class="mt-3"></div>
+            <!-- Production Calculator -->
+            <div class="mt-4">
+                <h5>🧮 Production Calculator</h5>
+                <form id="productionForm" class="row g-3">
+                    <div class="col-12">
+                        <label for="desiredQuantity" class="form-label">Desired Quantity (@Model.Recipe.YieldUnit):</label>
+                        <input type="number" class="form-control" id="desiredQuantity"
+                               min="1" value="@Model.Recipe.YieldQuantity">
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-primary mt-2" onclick="calculateRequirements()">
+                            Calculate Requirements
+                        </button>
+                    </div>
+                </form>
+
+                <div id="calculationResults" class="mt-4"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -67,24 +82,27 @@
             fetch(`/Production/CalculateRequirements?recipeId=${recipeId}&desiredQuantity=${desiredQuantity}`)
                 .then(response => response.json())
                 .then(data => {
-                    let html = `<h5>Required Ingredients</h5><table class="table"><thead><tr>
-                        <th>Ingredient</th><th>Required</th><th>Available</th><th>Status</th></tr></thead><tbody>`;
+                    let html = `<h5 class="mt-4">📦 Required Ingredients</h5>
+                                <div class="table-responsive"><table class="table table-bordered"><thead>
+                                <tr><th>Ingredient</th><th>Required</th><th>Available</th><th>Status</th></tr></thead><tbody>`;
 
                     data.forEach(item => {
                         html += `<tr>
                             <td>${item.ingredientName}</td>
                             <td>${item.requiredAmount} ${item.unit}</td>
                             <td>${item.availableStock} ${item.unit}</td>
-                            <td class="${item.status === 'Sufficient' ? 'text-success' : 'text-danger'}">
+                            <td class="${item.status === 'Sufficient' ? 'text-success fw-bold' : 'text-danger fw-bold'}">
                                 ${item.status}
                             </td>
                         </tr>`;
                     });
 
-                    html += `</tbody></table>
-                        <button class="btn btn-success" onclick="confirmProduction()">
-                            Confirm Production
-                        </button>`;
+                    html += `</tbody></table></div>
+                             <div class="text-end mt-3">
+                                <button class="btn btn-success" onclick="confirmProduction()">
+                                    ✅ Confirm Production
+                                </button>
+                             </div>`;
 
                     document.getElementById('calculationResults').innerHTML = html;
                 });
@@ -108,22 +126,17 @@
                 body: JSON.stringify(request)
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                }
+                if (!response.ok) return response.json().then(err => { throw err; });
                 return response.json();
             })
             .then(data => {
-                if (data && data.message) {
-                    // Force a full page reload from server, not cache
-                    window.location.reload(true);
-                } else {
-                    throw new Error(data?.error || 'Unknown error');
-                }
+                alert("Production confirmed successfully!");
+                window.location.reload(true);
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert(`Failed to confirm production: ${error.message}`);
+                alert(`❌ Failed to confirm production: ${error.message}`);
             });
-        }    </script>
+        }
+    </script>
 }

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Ingredient>
+
+@{
+    ViewData["Title"] = "Low Stock Ingredients";
+}
+
+<h1>Low Stock Ingredients</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ingredient</th>
+            <th>Current Stock</th>
+            <th>Minimum Required</th>
+            <th>Unit</th>
+            <th>Deficit</th>
+            <th>Supplier</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td class="text-danger font-weight-bold">@item.CurrentStock</td>
+                <td>@item.MinimumStockLevel</td>
+                <td>@item.UnitOfMeasure</td>
+                <td class="text-danger">@(item.MinimumStockLevel - item.CurrentStock)</td>
+                <td>@item.SupplierInfo</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back to All Ingredients</a>

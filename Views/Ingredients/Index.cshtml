@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Ingredient>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form asp-action="Index" method="get" class="form-inline">
+            <div class="input-group">
+                <input type="text" class="form-control" name="searchTerm"
+                       value="@ViewData["CurrentFilter"]" placeholder="Search ingredients..." id="ingredientSearch" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSort"]">Name</a>
+            </th>
+            <th>Unit</th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["StockSort"]">Current Stock</a>
+            </th>
+            <th>Minimum Level</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.MinimumStockLevel.HasValue && item.CurrentStock < item.MinimumStockLevel ? "table-warning" : "")">
+                <td>@item.Name</td>
+                <td>@item.UnitOfMeasure</td>
+                <td>@item.CurrentStock</td>
+                <td>@(item.MinimumStockLevel.HasValue ? item.MinimumStockLevel.ToString() : "N/A")</td>
+                <td>
+                    @if (item.MinimumStockLevel.HasValue && item.CurrentStock < item.MinimumStockLevel)
+                    {
+                        <span class="badge badge-danger">Low Stock</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">OK</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="StockUpdate" asp-route-id="@item.IngredientId" class="btn btn-sm btn-primary">Update Stock</a>
+                    <a asp-action="Edit" asp-route-id="@item.IngredientId" class="btn btn-sm btn-secondary">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(function() {
+            // Autocomplete for search
+            $("#ingredientSearch").autocomplete({
+                source: '@Url.Action("Search", "Ingredients")',
+                minLength: 2,
+                select: function(event, ui) {
+                    window.location.href = '@Url.Action("Edit", "Ingredients")/' + ui.item.id;
+                }
+            });
+        });
+    </script>
+}

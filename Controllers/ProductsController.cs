@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CakeProduction.Data;
 using CakeProduction.Models;
 using CakeProduction.ViewModels;
+using System.Text.Json;
 
 namespace CakeProduction.Controllers
 {
@@ -55,9 +56,26 @@ namespace CakeProduction.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new AddProductViewModel();
+
+            // Get ingredients and convert to SelectList
+            var ingredients = await _context.Ingredients
+                .Select(i => new
+                {
+                    i.IngredientId,
+                    i.Name,
+                    i.UnitOfMeasure
+                })
+                .ToListAsync();
+
+            // Store in ViewData to be used in JavaScript
+            ViewData["IngredientsJson"] = JsonSerializer.Serialize(ingredients);
+
+            // Also populate ViewBag for the dropdown
+            ViewBag.Ingredients = new SelectList(ingredients, "IngredientId", "Name");
+
             return View(model);
         }
 
@@ -65,6 +83,14 @@ namespace CakeProduction.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProductViewModel model)
         {
+            ViewBag.Ingredients = await _context.Ingredients
+             .Select(i => new SelectListItem
+             {
+                 Value = i.IngredientId.ToString(),
+                 Text = $"{i.Name} ({i.UnitOfMeasure})"
+             })
+             .ToListAsync();
+            
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -73,6 +99,19 @@ namespace CakeProduction.Controllers
 
             try
             {
+                foreach(var ingredientModel in model.Ingredients)
+                {
+                    if (string.IsNullOrWhiteSpace(ingredientModel.Name))
+                    {
+                        ModelState.AddModelError("", "All ingredients must have a name");
+                        return View(model);
+                    }
+                    if (ingredientModel.Quantity <= 0)
+                    {
+                        ModelState.AddModelError("", "All ingredients must have a positive quantity");
+                        return View(model);
+                    }
+                }
                 var product = new Product
                 {
                     Name = model.Name,
@@ -92,7 +131,7 @@ namespace CakeProduction.Controllers
                 foreach (var ingredientModel in model.Ingredients)
                 {
                     var ingredient = await _context.Ingredients
-                        .FirstOrDefaultAsync(i => i.Name == ingredientModel.Name) ?? new Ingredient
+                        .FirstOrDefaultAsync(i => i.IngredientId == ingredientModel.IngredientId) ?? new Ingredient
                         {
                             Name = ingredientModel.Name,
                             UnitOfMeasure = ingredientModel.Unit,
@@ -116,6 +155,12 @@ namespace CakeProduction.Controllers
             {
                 await transaction.RollbackAsync();
                 ModelState.AddModelError("", "An error occurred while saving: " + ex.Message);
+                ViewBag.Ingredients = await _context.Ingredients
+                    .Select(i => new SelectListItem
+                    {
+                        Value = i.IngredientId.ToString(),
+                        Text = $"{i.Name} ({i.UnitOfMeasure})"
+                    }).ToListAsync();
                 return View(model);
             }
         }

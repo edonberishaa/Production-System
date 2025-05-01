@@ -65,8 +65,11 @@
         {
             <div class="ingredient-row row mb-3">
                 <div class="col-md-5">
-                    <input asp-for="Ingredients[i].Name" class="form-control" placeholder="Ingredient name" />
-                    <span asp-validation-for="Ingredients[i].Name" class="text-danger"></span>
+                    <select asp-for="Ingredients[i].IngredientId" asp-items="ViewBag.Ingredients" class="form-control">
+                        <option value="">--Select Ingredient --</option>
+                    </select>
+                    <input type="hidden" asp-for="Ingredients[i].Name" />
+                    <span asp-validation-for="Ingredients[i].IngredientId" class="text-danger"></span>
                 </div>
                 <div class="col-md-3">
                     <input asp-for="Ingredients[i].Quantity" class="form-control" placeholder="Quantity" />
@@ -95,19 +98,33 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function() {
+            // Get ingredients data for JavaScript
+            var ingredientsData = @Html.Raw(ViewData["IngredientsJson"] ?? "[]");
+            console.log("Ingredients Data:", ingredientsData);
+
             // Add new ingredient row
             $('#add-ingredient').click(function() {
                 var index = $('#ingredients-container .ingredient-row').length;
                 var html = `
                     <div class="ingredient-row row mb-3">
                         <div class="col-md-5">
-                            <input name="Ingredients[${index}].Name" class="form-control" placeholder="Ingredient name" />
+                            <select name="Ingredients[${index}].IngredientId" class="form-control ingredient-select">
+                                <option value="">-- Select Ingredient --</option>
+                                ${ingredientsData.map(i =>
+                                    `<option value="${i.IngredientId}"
+                                            data-name="${i.Name}"
+                                            data-unit="${i.UnitOfMeasure}">
+                                        ${i.Name} (${i.UnitOfMeasure})
+                                    </option>`
+                                ).join('')}
+                            </select>
+                            <input type="hidden" name="Ingredients[${index}].Name" class="ingredient-name" />
                         </div>
                         <div class="col-md-3">
                             <input name="Ingredients[${index}].Quantity" class="form-control" placeholder="Quantity" />
                         </div>
                         <div class="col-md-3">
-                            <input name="Ingredients[${index}].Unit" class="form-control" placeholder="Unit (kg, g, etc.)" />
+                            <input name="Ingredients[${index}].Unit" class="form-control unit-field" placeholder="Unit" readonly />
                         </div>
                         <div class="col-md-1">
                             <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
@@ -119,16 +136,30 @@
             // Remove ingredient row
             $(document).on('click', '.remove-ingredient', function() {
                 $(this).closest('.ingredient-row').remove();
-                // Reindex remaining ingredients
+                reindexIngredients();
+            });
+
+            // Update name and unit when ingredient is selected
+            $(document).on('change', '.ingredient-select', function() {
+                var selectedOption = $(this).find('option:selected');
+                var row = $(this).closest('.ingredient-row');
+
+                // Set the hidden name field
+                row.find('.ingredient-name').val(selectedOption.data('name'));
+
+                // Set the unit field
+                row.find('.unit-field').val(selectedOption.data('unit'));
+            });
+
+            function reindexIngredients() {
                 $('#ingredients-container .ingredient-row').each(function(index) {
-                    $(this).find('input').each(function() {
+                    $(this).find('select, input').each(function() {
                         var name = $(this).attr('name');
                         if (name) {
                             $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
                         }
                     });
                 });
-            });
-        });
-    </script>
+            }
+        });     </script>
 }

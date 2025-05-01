@@ -1,0 +1,76 @@
+﻿@model Ingredient
+
+@{
+    ViewData["Title"] = "Create Ingredient";
+}
+
+<h1>Create New Ingredient</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UnitOfMeasure" class="control-label"></label>
+                <select asp-for="UnitOfMeasure" class="form-control">
+                    <option value="kg">kg</option>
+                    <option value="g">g</option>
+                    <option value="l">liters</option>
+                    <option value="ml">ml</option>
+                    <option value="units">units</option>
+                    <option value="tsp">teaspoons</option>
+                    <option value="tbsp">tablespoons</option>
+                </select>
+                <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CurrentStock" class="control-label"></label>
+                <input asp-for="CurrentStock" class="form-control" />
+                <span asp-validation-for="CurrentStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MinimumStockLevel" class="control-label"></label>
+                <input asp-for="MinimumStockLevel" class="form-control" />
+                <span asp-validation-for="MinimumStockLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SupplierInfo" class="control-label"></label>
+                <input asp-for="SupplierInfo" class="form-control" />
+                <span asp-validation-for="SupplierInfo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function() {
+            // Client-side duplicate check
+            $('#ingredientName').blur(function() {
+                var ingredientName = $(this).val();
+                if (!ingredientName) return;
+
+                $.get('/Ingredients/CheckDuplicate', { name: ingredientName }, function(result) {
+                    if (result.exists) {
+                        alert(`Ingredient '${ingredientName}' already exists. Please update its stock instead.`);
+                        $('#ingredientName').val('').focus();
+                    }
+                });
+            });
+        });
+    </script>
+
+}
