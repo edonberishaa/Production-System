@@ -46,8 +46,10 @@ using(var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        var userManager = services.GetRequiredService<ApplicationDbContext>();
-        var roleManager = services.GetRequiredService<UserManager<IdentityUser>>();
+        var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+        var roleService = services.GetRequiredService<RoleService>();
+
+        await roleService.EnsureRolesCreated();
 
         await DatabaseSeeder.SeedAsync(context);
     }
@@ -69,7 +71,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapStaticAssets();
 

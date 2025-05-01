@@ -18,10 +18,11 @@ namespace CakeProduction.Services
 
             foreach(var roleName in roleNames)
             {
-                var roleExist = await _roleManager.RoleExistsAsync(roleName);
+                var normalizedRoleName = roleName.ToUpper();
+                var roleExist = await _roleManager.RoleExistsAsync(normalizedRoleName);
                 if (!roleExist)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+                    await _roleManager.CreateAsync(new IdentityRole(normalizedRoleName));
                 }
             }
         }
