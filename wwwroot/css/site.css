@@ -48,3 +48,17 @@ body {
         background-color: #ff6f61;
         color: white;
     }
+#analysisModal .modal-body {
+    padding: 2rem;
+}
+
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+    width: 100%;
+}
+
+#trendChart {
+    height: 200px !important;
+}

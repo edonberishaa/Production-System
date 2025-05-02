@@ -1,9 +1,12 @@
 ﻿using CakeProduction.Data;
 using CakeProduction.Models;
 using CakeProduction.Services;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+
 
 namespace CakeProduction.Controllers
 {
@@ -152,6 +155,5 @@ namespace CakeProduction.Controllers
                 return StatusCode(500, new { Message = "Production failed", Error = ex.Message });
             }
         }
-
     }
 }
