@@ -36,6 +36,6 @@ _A bakery management solution for production tracking, inventory control, and sa
 ## 🚀 Installation Guide
 
 ### Prerequisites
-- .NET 7.0 SDK
+- .NET 9.0 SDK
 - SQL Server 2019+
 - SMTP server credentials
