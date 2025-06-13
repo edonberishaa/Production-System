@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CakeProduction</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CakeProduction.styles.css" asp-append-version="true" />
-@*     <link rel="stylesheet" href="~/../Views/Shared/_Layout.cshtml.css" />
- *@</head>
+    @* <link rel="stylesheet" href="~/../Views/Shared/_Layout.cshtml.css" /> *@
+</head>
 <body>
     <div class="app-wrapper">
         <!-- Sidebar -->
@@ -21,14 +21,14 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
-                <a class="nav-link" asp-controller="Products" asp-action="Create">Add New Cake</a>
-                <a class="nav-link" asp-controller="Ingredients" asp-action="Index">Ingredients</a>
-                <a class="nav-link" asp-controller="Production" asp-action="History">History of production</a>
-                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                <a class="nav-link" asp-controller="UserPreferences" asp-action="Edit">User Preferences AI </a>
-                <a class="nav-link" asp-controller="RecipeSuggestions" asp-action="AISuggestions">AI Based Suggestions </a>
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
+                    <a class="nav-link" asp-controller="Products" asp-action="Create">Add New Cake</a>
+                    <a class="nav-link" asp-controller="Ingredients" asp-action="Index">Ingredients</a>
+                    <a class="nav-link" asp-controller="Production" asp-action="History">History of production</a>
+                    <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                    <a class="nav-link" asp-controller="UserPreferences" asp-action="Edit">User Preferences AI </a>
+                    <a class="nav-link" asp-controller="RecipeSuggestions" asp-action="AISuggestions">AI Based Suggestions </a>
 
                     <span class="nav-link disabled">Hello, @User.Identity.Name!</span>
 
@@ -85,5 +85,55 @@
         });
     </script>
 
+    <script>
+        (function() {
+            let messageDiv = null;
+
+            function isDevToolsOpen() {
+                const threshold = 160;
+                return (window.outerWidth - window.innerWidth > threshold) || 
+                       (window.outerHeight - window.innerHeight > threshold);
+            }
+
+            function showMessage() {
+                if (!messageDiv) {
+                    messageDiv = document.createElement('div');
+                    messageDiv.style.position = 'fixed';
+                    messageDiv.style.bottom = '20px';
+                    messageDiv.style.left = '50%';
+                    messageDiv.style.transform = 'translateX(-50%)';
+                    messageDiv.style.backgroundColor = '#dc3545';
+                    messageDiv.style.color = 'white';
+                    messageDiv.style.padding = '15px 30px';
+                    messageDiv.style.borderRadius = '8px';
+                    messageDiv.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+                    messageDiv.style.zIndex = '9999';
+                    messageDiv.style.fontSize = '1.1rem';
+                    messageDiv.textContent = '⚠️ Please be aware that inspecting the console is monitored for security reasons. Pse po hin bre ktu!';
+                    document.body.appendChild(messageDiv);
+                }
+            }
+
+            function hideMessage() {
+                if (messageDiv) {
+                    messageDiv.remove();
+                    messageDiv = null;
+                }
+            }
+
+            function checkDevTools() {
+                if (isDevToolsOpen()) {
+                    showMessage();
+                } else {
+                    hideMessage();
+                }
+            }
+
+            window.addEventListener('resize', checkDevTools);
+            window.addEventListener('load', checkDevTools);
+
+            setInterval(checkDevTools, 500);
+        })();
+    </script>
 </body>
 </html>
