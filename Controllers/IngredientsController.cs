@@ -1,10 +1,13 @@
 ﻿using CakeProduction.Data;
 using CakeProduction.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CakeProduction.Controllers
 {
+    [Authorize]
+
     public class IngredientsController : Controller
     {
         private readonly ApplicationDbContext _context;

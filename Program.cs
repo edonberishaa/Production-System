@@ -22,6 +22,14 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = "56700555693-ghevd5vierernemb0nr04buvtndb9osi.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+        options.CallbackPath = "/signin-google";
+    });
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthorization(options =>
@@ -31,6 +39,8 @@ builder.Services.AddAuthorization(options =>
     policy.RequireRole("Admin", "ProductionManager", "Baker"));
 });
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductionLogger,ProductionLogger>();
 builder.Services.AddScoped<ILowStockAlertService,LowStockAlertService>();
@@ -68,6 +78,11 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+if(app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

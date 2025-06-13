@@ -1,0 +1,39 @@
+﻿@{  
+    ViewData["Title"] = "Dashboard";  
+}  
+
+<h2>Production KPIs Dashboard</h2>  
+
+<canvas id="turnoverChart" width="200" height="100"></canvas>  
+<canvas id="recipeChart" width="200" height="100"></canvas>  
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+<script>  
+    // Turnover Chart  
+    const turnoverCtx = document.getElementById('turnoverChart').getContext('2d');  
+    const turnoverChart = new Chart(turnoverCtx, {  
+        type: 'bar',  
+        data: {  
+            labels: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => ((DateTime)t.Date).ToString("yyyy-MM-dd")))),  
+            datasets: [{  
+                label: 'Total Produced',  
+                data: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => (int)t.TotalProduced))),  
+                backgroundColor: 'rgba(75, 192, 192, 0.7)',  
+            }]  
+        }  
+    });  
+
+    // Most Used Recipes Chart  
+    const recipeCtx = document.getElementById('recipeChart').getContext('2d');  
+    const recipeChart = new Chart(recipeCtx, {  
+        type: 'pie',  
+        data: {  
+            labels: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (string)r.RecipeName))),  
+            datasets: [{  
+                label: 'Most Used Recipes',  
+                data: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (int)r.TimesUsed))),  
+                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#009688']  
+            }]  
+        }  
+    });  
+</script>

@@ -15,6 +15,7 @@ namespace CakeProduction.Data
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
         public DbSet<ProductionLog> ProductionLogs { get; set; }
+        public DbSet<UserPreference> UserPreferences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -49,6 +50,19 @@ namespace CakeProduction.Data
             builder.Entity<RecipeIngredient>(entity =>
             {
                 entity.Property(e => e.Quantity).HasPrecision(18, 4);
+            });
+            builder.Entity<UserPreference>(entity =>
+            {
+                entity.HasKey(up => up.PreferenceId);
+                entity.HasOne(up => up.User)
+                .WithMany()
+                .HasForeignKey(up => up.UserId)
+                .IsRequired();
+
+                entity.HasOne(up => up.Ingredient)
+                .WithMany()
+                .HasForeignKey(up => up.IngredientId)
+                .IsRequired();
             });
         }
     }

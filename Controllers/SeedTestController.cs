@@ -1,4 +1,5 @@
 ﻿using CakeProduction.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,8 @@ namespace CakeProduction.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class SeedTestController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

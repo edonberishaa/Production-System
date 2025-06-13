@@ -18,14 +18,18 @@
                 <h5 class="fw-bold mt-2">CakeProduction</h5>
             </div>
             <nav class="nav flex-column">
+
+                @if (User.Identity.IsAuthenticated)
+                {
                 <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                 <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
                 <a class="nav-link" asp-controller="Products" asp-action="Create">Add New Cake</a>
                 <a class="nav-link" asp-controller="Ingredients" asp-action="Index">Ingredients</a>
                 <a class="nav-link" asp-controller="Production" asp-action="History">History of production</a>
+                <a class="nav-link" asp-controller="UserPreferences" asp-action="Edit">User Preferences AI </a>
+                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 
-                @if (User.Identity.IsAuthenticated)
-                {
+
                     <span class="nav-link disabled">Hello, @User.Identity.Name!</span>
                     <form method="post" asp-area="Identity" asp-page="/Account/Logout">
                         <button type="submit" class="nav-link btn btn-link text-start p-0">Logout</button>

@@ -1,11 +1,13 @@
 ﻿using CakeProduction.Data;
 using CakeProduction.Models;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CakeProduction.Controllers.Api
 {
+    [Authorize]
     [Route("api/production")]
     [ApiController]
     public class ProductionAnalysisController : ControllerBase
