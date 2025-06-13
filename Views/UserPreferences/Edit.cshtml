@@ -12,7 +12,7 @@
         {
             <div class="form-check">
                 <input type="checkbox" class="form-check-input"
-                       name="SelectedIngredientIds"
+                       name="SelectedIngredients"
                        value="@ingredient.IngredientId"
                        @(Model.SelectedIngredients.Contains(ingredient.IngredientId) ? "checked" : "") />
                 <label class="form-check-label">@ingredient.Name</label>

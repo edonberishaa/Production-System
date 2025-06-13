@@ -43,8 +43,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductionLogger,ProductionLogger>();
-builder.Services.AddScoped<ILowStockAlertService,LowStockAlertService>();
+builder.Services.AddScoped<ILowStockAlertService, LowStockAlertService>();
 builder.Services.AddHostedService<LowStockBackgroundService>();
+builder.Services.AddSingleton<AIRecipeSuggestionService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddScoped<RoleService>();
 

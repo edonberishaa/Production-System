@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Today's AI-Powered Recipe Suggestions";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="alert alert-info">
+    <strong>Based on your preferences:</strong><br />
+    <pre>@ViewBag.AISuggestions</pre>
+</div>
