@@ -1,39 +1,96 @@
-﻿@{  
-    ViewData["Title"] = "Dashboard";  
-}  
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
 
-<h2>Production KPIs Dashboard</h2>  
+<h2>@ViewData["Title"]</h2>
 
-<canvas id="turnoverChart" width="200" height="100"></canvas>  
-<canvas id="recipeChart" width="200" height="100"></canvas>  
+<div class="row">
+    <div class="col-md-6">
+        <h4>Production Turnover Over Time</h4>
+        <canvas id="turnoverChart" width="400" height="250"></canvas>
+    </div>
+    <div class="col-md-6">
+        <h4>Most Used Recipes</h4>
+        <canvas id="recipeChart" width="400" height="250"></canvas>
+    </div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
-<script>  
-    // Turnover Chart  
-    const turnoverCtx = document.getElementById('turnoverChart').getContext('2d');  
-    const turnoverChart = new Chart(turnoverCtx, {  
-        type: 'bar',  
-        data: {  
-            labels: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => ((DateTime)t.Date).ToString("yyyy-MM-dd")))),  
-            datasets: [{  
-                label: 'Total Produced',  
-                data: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => (int)t.TotalProduced))),  
-                backgroundColor: 'rgba(75, 192, 192, 0.7)',  
-            }]  
-        }  
-    });  
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Prepare data for Turnover Chart
+    const turnoverLabels = @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => ((DateTime)t.Date).ToString("yyyy-MM-dd"))));
+    const turnoverData = @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.Turnover).Select(t => (int)t.TotalProduced)));
 
-    // Most Used Recipes Chart  
-    const recipeCtx = document.getElementById('recipeChart').getContext('2d');  
-    const recipeChart = new Chart(recipeCtx, {  
-        type: 'pie',  
-        data: {  
-            labels: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (string)r.RecipeName))),  
-            datasets: [{  
-                label: 'Most Used Recipes',  
-                data: @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (int)r.TimesUsed))),  
-                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#009688']  
-            }]  
-        }  
-    });  
+    const turnoverCtx = document.getElementById('turnoverChart').getContext('2d');
+    const turnoverChart = new Chart(turnoverCtx, {
+        type: 'bar',
+        data: {
+            labels: turnoverLabels,
+            datasets: [{
+                label: 'Total Produced',
+                data: turnoverData,
+                backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity Produced'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Production Date'
+                    }
+                }
+            }
+        }
+    });
+
+    // Prepare data for Most Used Recipes Chart
+    const recipeLabels = @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (string)r.RecipeName)));
+    const recipeData = @Html.Raw(Json.Serialize(((IEnumerable<dynamic>)ViewBag.MostUsed).Select(r => (int)r.TimesUsed)));
+
+    const recipeCtx = document.getElementById('recipeChart').getContext('2d');
+    const recipeChart = new Chart(recipeCtx, {
+        type: 'pie',
+        data: {
+            labels: recipeLabels,
+            datasets: [{
+                label: 'Most Used Recipes',
+                data: recipeData,
+                backgroundColor: [
+                    '#ff6384',
+                    '#36a2eb',
+                    '#cc65fe',
+                    '#ffce56',
+                    '#009688',
+                    '#e91e63',
+                    '#3f51b5',
+                    '#009688',
+                    '#ffc107',
+                    '#795548'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                tooltip: {
+                    enabled: true
+                }
+            }
+        }
+    });
 </script>

@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<table class="table">
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
@@ -33,24 +33,43 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr class="@(item.MinimumStockLevel.HasValue && item.CurrentStock < item.MinimumStockLevel ? "table-warning" : "")">
-                <td>@item.Name</td>
+            var isLowStock = item.MinimumStockLevel.HasValue && item.CurrentStock < item.MinimumStockLevel;
+            <tr class="text-center @(isLowStock ? "table-warning" : "")">
+                <td class="text-start">@item.Name</td>
                 <td>@item.UnitOfMeasure</td>
-                <td>@item.CurrentStock</td>
-                <td>@(item.MinimumStockLevel.HasValue ? item.MinimumStockLevel.ToString() : "N/A")</td>
                 <td>
-                    @if (item.MinimumStockLevel.HasValue && item.CurrentStock < item.MinimumStockLevel)
+                    @item.CurrentStock
+                    @if (item.MinimumStockLevel.HasValue)
                     {
-                        <span class="badge badge-danger">Low Stock</span>
+                        var percent = Math.Min(100, (int)(item.CurrentStock * 100.0m / item.MinimumStockLevel.Value));
+                        var progressClass = percent < 100 ? "bg-danger" : "bg-success";
+
+                        <div class="progress mt-1" style="height: 20px;">
+                            <div class="progress-bar @progressClass" role="progressbar"
+                                 style="width: @percent%" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100">
+                                @percent%
+                            </div>
+                        </div>
+                    }
+                </td>
+                <td>@(item.MinimumStockLevel.HasValue? item.MinimumStockLevel.ToString() : "N/A")</td>
+                <td>
+                    @if (isLowStock)
+                    {
+                        <span class="badge bg-danger">Low Stock</span>
                     }
                     else
                     {
-                        <span class="badge badge-success">OK</span>
+                        <span class="badge bg-success">OK</span>
                     }
                 </td>
                 <td>
-                    <a asp-action="StockUpdate" asp-route-id="@item.IngredientId" class="btn btn-sm btn-primary">Update Stock</a>
-                    <a asp-action="Edit" asp-route-id="@item.IngredientId" class="btn btn-sm btn-secondary">Edit</a>
+                    <a asp-action="StockUpdate" asp-route-id="@item.IngredientId" class="btn btn-sm btn-outline-primary me-1">
+                        Update
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@item.IngredientId" class="btn btn-sm btn-outline-secondary">
+                        Edit
+                    </a>
                 </td>
             </tr>
         }

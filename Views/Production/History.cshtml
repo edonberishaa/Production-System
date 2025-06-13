@@ -3,90 +3,98 @@
     ViewData["Title"] = "Production History";
 }
 
-<h1>Production History</h1>
+<div class="container-fluid py-4">
+    <h2 class="mb-4 text-danger fw-bold">📜 @ViewData["Title"]</h2>
 
-<form method="get" class="mb-4">
-    <div class="row">
-        <div class="col-md-3">
-            <label class="form-label">Product</label>
-            <select name="productId" class="form-select" asp-items="ViewBag.Products">
-                <option value="">All Products</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">From Date</label>
-            <input type="date" name="fromDate" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">To Date</label>
-            <input type="date" name="toDate" class="form-control" />
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </div>
-    </div>
-</form>
-
-<div class="mb-3">
-    <a href="/api/production/export?productId=@Context.Request.Query["productId"]&fromDate=@Context.Request.Query["fromDate"]&toDate=@Context.Request.Query["toDate"]" class="btn btn-outline-success">
-        Export to Excel
-    </a>
-</div>
-
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Produced By</th>
-            <th>Notes</th>
-            <th>Analysis</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.ProductionDate.ToString("g")</td>
-                <td>@item.Product?.Name</td>
-                <td>@item.QuantityProduced @item.Recipe?.YieldUnit</td>
-                <td>@item.ProducedBy</td>
-                <td>@item.Notes</td>
-                <td>
-                    <a href="#" class="btn btn-sm btn-info analysis-btn"
-                       data-date="@item.ProductionDate.ToString("yyyy-MM-dd")"
-                       data-product="@item.ProductId">
-                        See Analysis
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<div class="col-md-3 d-flex align-items-end">
-    <button type="button" class="btn btn-success" id="btnAnalyzeAll">
-        Analyze All
-    </button>
-</div>
-
-
-<div class="modal fade" id="analysisModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Production Analysis</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Filter Form -->
+    <form method="get" class="bg-light p-3 rounded shadow-sm mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">🍰 Product</label>
+                <select name="productId" class="form-select" asp-items="ViewBag.Products">
+                    <option value="">All Products</option>
+                </select>
             </div>
-            <div class="modal-body">
+            <div class="col-md-3">
+                <label class="form-label">📅 From Date</label>
+                <input type="date" name="fromDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">📅 To Date</label>
+                <input type="date" name="toDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary w-100">🔍 Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Export Button -->
+    <div class="mb-3 text-end">
+        <a href="/api/production/export?productId=@Context.Request.Query["productId"]&fromDate=@Context.Request.Query["fromDate"]&toDate=@Context.Request.Query["toDate"]"
+           class="btn btn-outline-success">
+            ⬇️ Export to Excel
+        </a>
+    </div>
+
+    <!-- Production History Table -->
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered align-middle shadow-sm">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Produced By</th>
+                    <th>Notes</th>
+                    <th>Analysis</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="text-center">
+                        <td>@item.ProductionDate.ToString("g")</td>
+                        <td>@item.Product?.Name</td>
+                        <td>@item.QuantityProduced @item.Recipe?.YieldUnit</td>
+                        <td>@item.ProducedBy</td>
+                        <td>@item.Notes</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info analysis-btn"
+                                    data-date="@item.ProductionDate.ToString("yyyy-MM-dd")"
+                                    data-product="@item.ProductId">
+                                📊 Analyze
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Analyze All Button -->
+    <div class="text-end mt-3">
+        <button type="button" class="btn btn-success" id="btnAnalyzeAll">
+            📈 Analyze All
+        </button>
+    </div>
+</div>
+
+<!-- Modal for Analysis -->
+<div class="modal fade" id="analysisModal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="analysisModalLabel">📊 Production Analysis</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white">
                 <div class="row">
-                    <div class="col-md-6">
-                        <canvas id="timeChart" height="300"></canvas>
+                    <div class="col-md-6 mb-3">
+                        <canvas id="timeChart" height="250"></canvas>
                     </div>
-                    <div class="col-md-6">
-                        <canvas id="wasteChart" height="300"></canvas>
+                    <div class="col-md-6 mb-3">
+                        <canvas id="wasteChart" height="250"></canvas>
                     </div>
                 </div>
                 <div class="mt-4">
@@ -100,31 +108,8 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-               $(document).ready(function () {
+        $(document).ready(function () {
             let timeChart, wasteChart, trendChart;
-
-            // Handle "See Analysis" buttons
-            $('.analysis-btn').click(function () {
-                const productId = $(this).data('product');
-                const date = $(this).data('date');
-
-                fetch(`/api/production/analysis?productId=${productId}&date=${date}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCharts(data);
-                        $('#analysisModal').modal('show');
-                    });
-            });
-
-            // Handle "Analyze All" button
-            $('#btnAnalyzeAll').click(function () {
-                fetch(`/api/production/analysis`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderCharts(data);
-                        $('#analysisModal').modal('show');
-                    });
-            });
 
             function renderCharts(data) {
                 if (timeChart) timeChart.destroy();
@@ -138,7 +123,7 @@
                         datasets: [{
                             label: 'Production Time (minutes)',
                             data: data.timeData,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
                         }]
                     }
                 });
@@ -149,10 +134,7 @@
                         labels: ['Used', 'Wasted'],
                         datasets: [{
                             data: [data.totalProduced, data.totalWasted],
-                            backgroundColor: [
-                                'rgba(75, 192, 192, 0.5)',
-                                'rgba(255, 99, 132, 0.5)'
-                            ]
+                            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)']
                         }]
                     }
                 });
@@ -165,12 +147,33 @@
                             label: 'Daily Production',
                             data: data.trendData,
                             borderColor: 'rgb(153, 102, 255)',
+                            fill: false,
                             tension: 0.1
                         }]
                     }
                 });
             }
-        });
 
+            $('.analysis-btn').click(function () {
+                const productId = $(this).data('product');
+                const date = $(this).data('date');
+
+                fetch(`/api/production/analysis?productId=${productId}&date=${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderCharts(data);
+                        $('#analysisModal').modal('show');
+                    });
+            });
+
+            $('#btnAnalyzeAll').click(function () {
+                fetch(`/api/production/analysis`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderCharts(data);
+                        $('#analysisModal').modal('show');
+                    });
+            });
+        });
     </script>
 }

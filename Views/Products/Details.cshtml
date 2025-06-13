@@ -1,4 +1,5 @@
 ﻿@model Product
+
 @{
     ViewData["Title"] = Model.Name;
 }
@@ -7,60 +8,62 @@
     <div class="row align-items-start">
         <!-- Cake Image -->
         <div class="col-lg-6 mb-4">
-            <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm" alt="@Model.Name">
+            <img src="@Model.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Name">
         </div>
 
         <!-- Cake Info -->
         <div class="col-lg-6">
-            <h2 class="mb-3">@Model.Name</h2>
-            <p class="lead">@Model.Description</p>
+            <h2 class="mb-3 text-danger fw-bold">@Model.Name</h2>
+            <p class="lead text-muted">@Model.Description</p>
 
+            <!-- Recipe Info -->
             <div class="mt-4">
-                <h4 class="fw-semibold">🍽️ Recipe Details</h4>
-                <ul class="list-unstyled">
+                <h5 class="fw-semibold mb-2">🍽️ Recipe Details</h5>
+                <ul class="list-unstyled small">
                     <li><strong>Yield:</strong> @Model.Recipe.YieldQuantity @Model.Recipe.YieldUnit</li>
                     <li><strong>Preparation Time:</strong> @Model.Recipe.PreparationTime minutes</li>
                 </ul>
             </div>
 
-            <!-- Ingredients Table -->
-            <h5 class="mt-4">🧂 Ingredients</h5>
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Ingredient</th>
-                            <th>Required</th>
-                            <th>Available</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ri in Model.Recipe.RecipeIngredients)
-                        {
-                            var status = ri.Ingredient.CurrentStock >= ri.Quantity ? "Sufficient" : "Insufficient";
+            <!-- Ingredients -->
+            <div class="mt-4">
+                <h5 class="fw-semibold mb-2">🧂 Ingredients</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-danger text-white">
                             <tr>
-                                <td>@ri.Ingredient.Name</td>
-                                <td>@ri.Quantity @ri.Ingredient.UnitOfMeasure</td>
-                                <td>@ri.Ingredient.CurrentStock @ri.Ingredient.UnitOfMeasure</td>
-                                <td class="fw-bold @(status == "Sufficient" ? "text-success" : "text-danger")">@status</td>
+                                <th>Ingredient</th>
+                                <th>Required</th>
+                                <th>Available</th>
+                                <th>Status</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var ri in Model.Recipe.RecipeIngredients)
+                            {
+                                var status = ri.Ingredient.CurrentStock >= ri.Quantity ? "Sufficient" : "Insufficient";
+                                <tr>
+                                    <td>@ri.Ingredient.Name</td>
+                                    <td>@ri.Quantity @ri.Ingredient.UnitOfMeasure</td>
+                                    <td>@ri.Ingredient.CurrentStock @ri.Ingredient.UnitOfMeasure</td>
+                                    <td class="fw-bold @(status == "Sufficient" ? "text-success" : "text-danger")">@status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Production Calculator -->
             <div class="mt-4">
-                <h5>🧮 Production Calculator</h5>
+                <h5 class="fw-semibold">🧮 Production Calculator</h5>
                 <form id="productionForm" class="row g-3">
                     <div class="col-12">
                         <label for="desiredQuantity" class="form-label">Desired Quantity (@Model.Recipe.YieldUnit):</label>
-                        <input type="number" class="form-control" id="desiredQuantity"
-                               min="1" value="@Model.Recipe.YieldQuantity">
+                        <input type="number" class="form-control" id="desiredQuantity" min="1" value="@Model.Recipe.YieldQuantity">
                     </div>
                     <div class="col-12 text-end">
-                        <button type="button" class="btn btn-primary mt-2" onclick="calculateRequirements()">
+                        <button type="button" class="btn btn-outline-primary mt-2" onclick="calculateRequirements()">
                             Calculate Requirements
                         </button>
                     </div>
