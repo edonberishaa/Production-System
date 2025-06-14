@@ -29,13 +29,15 @@ namespace CakeProduction.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,6 +45,7 @@ namespace CakeProduction.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -84,6 +87,8 @@ namespace CakeProduction.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            public string Role { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -159,6 +164,13 @@ namespace CakeProduction.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    var roleExists = await _roleManager.RoleExistsAsync(Input.Role);
+                    if (!roleExists)
+                    {
+                        ModelState.AddModelError(string.Empty, $"Role '{Input.Role}' does not exist.");
+                        return Page();
+                    }
+                    await _userManager.AddToRoleAsync(user, Input.Role);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {

@@ -34,8 +34,13 @@ namespace CakeProduction.Controllers
                 .ToListAsync();
 
             var aiResponse = await _aiService.GetAIResponse(ingredients);
-
             ViewBag.AISuggestions = aiResponse;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_AISuggestionsPartial");
+            }
+
             return View();
         }
     }

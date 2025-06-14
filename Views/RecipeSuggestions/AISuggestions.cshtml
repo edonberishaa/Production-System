@@ -4,7 +4,32 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<div class="alert alert-info">
+<button id="getSuggestionsBtn" class="btn btn-primary mb-3">Get AI Suggestions</button>
+
+<div id="suggestionsContainer" class="alert alert-info" style="display:none;">
     <strong>Based on your preferences:</strong><br />
-    <pre>@ViewBag.AISuggestions</pre>
+    <pre id="aiContent"></pre>
 </div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#getSuggestionsBtn').click(function () {
+            $.ajax({
+                url: '/RecipeSuggestions/AISuggestions',
+                type: 'GET',
+                success: function (result) {
+                    // Load full returned HTML and replace content
+                    const html = $(result);
+                    const newContent = html.find('#aiContent').html();
+
+                    $('#aiContent').html(newContent);
+                    $('#suggestionsContainer').show();
+                },
+                error: function () {
+                    alert('Failed to get suggestions.');
+                }
+            });
+        });
+    </script>
+}
