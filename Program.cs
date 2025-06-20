@@ -26,8 +26,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
-        options.ClientId = "56700555693-ghevd5vierernemb0nr04buvtndb9osi.apps.googleusercontent.com";
-        options.ClientSecret = "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";
+        options.ClientId = "xxxxxxxxxxxxxxx";
+        options.ClientSecret = "xxxxxxxxxxx";
         options.CallbackPath = "/signin-google";
     });
 // Add services to the container.
