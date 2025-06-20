@@ -6,7 +6,7 @@ namespace CakeProduction.Services
     public class AIRecipeSuggestionService
     {
         private readonly HttpClient _httpClient;
-        private const string apiKey = "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";
+        private const string apiKey = "xxxxxxxxxxxxxxxxxxxxxxxxx";
         private const string apiUrl = "https://api.openai.com/v1/chat/completions";
 
         public AIRecipeSuggestionService()
